@@ -261,9 +261,16 @@ function createAttributeSetter(value: webidl2.AttributeMemberType) {
   return ts.createMethodSignature([], [parameter], ts.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword), 'set_' + value.name, undefined)
 }
 
-function convertMemberOperation(idl: webidl2.OperationMemberType) {
+function convertMemberOperation(idl: webidl2.OperationMemberType) {   
+    
   const args = idl.arguments.map(convertArgument)
-  return ts.createMethodSignature([], args, convertType(idl.idlType), idl.name, undefined)
+  return ts.factory.createMethodSignature(
+    idl.special === "static" ? ts.factory.createModifiersFromModifierFlags(ts.ModifierFlags.Static): undefined,
+    idl.name,
+    undefined,
+    [],
+    args, 
+    convertType(idl.idlType));
 }
 
 function convertMemberConstructor(idl: webidl2.ConstructorMemberType | webidl2.OperationMemberType, options?: Options) {

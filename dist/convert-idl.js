@@ -162,7 +162,8 @@ function createAttributeSetter(value) {
 }
 function convertMemberOperation(idl) {
     var args = idl.arguments.map(convertArgument);
-    return ts.createMethodSignature([], args, convertType(idl.idlType), idl.name, undefined);
+    return ts.factory.createMethodSignature(idl.special === "static" ? ts.factory.createModifiersFromModifierFlags(ts.ModifierFlags.Static) : undefined, idl.name, undefined, [], args, convertType(idl.idlType));
+    //return ts.createMethodSignature([], args, convertType(idl.idlType), idl.name, undefined)
 }
 function convertMemberConstructor(idl, options) {
     var args = idl.arguments.map(convertArgument);
