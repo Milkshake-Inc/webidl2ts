@@ -4,16 +4,10 @@ This tool generates a `.d.ts` file based on a WebIDL input file.
 
 # Installation
 
-use npm or yarn to install from npmjs
+CLI
 
 ```shell
-npm install webidl2ts
-```
-
-or from github
-
-```shell
-npm install github:giniedp/webidl2ts
+npx milkshake-inc/webidl2ts
 ```
 
 # Usage

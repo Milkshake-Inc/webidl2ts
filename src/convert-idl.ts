@@ -45,13 +45,14 @@ export function convertIDL(rootTypes: webidl2.IDLRootType[], options?: Options):
         for (const attr of rootType.extAttrs) {
           if (attr.name === 'Exposed' && attr.rhs?.value === 'Window') {
             nodes.push(
-              ts.createVariableStatement(
-                [ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
-                ts.createVariableDeclarationList(
+              ts.factory.createVariableStatement(
+                [ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
+                ts.factory.createVariableDeclarationList(
                   [
-                    ts.createVariableDeclaration(
-                      ts.createIdentifier(rootType.name),
-                      ts.createTypeReferenceNode(ts.createIdentifier(rootType.name), undefined),
+                    ts.factory.createVariableDeclaration(
+                      ts.factory.createIdentifier(rootType.name),
+                      undefined,
+                      ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(rootType.name), undefined),
                       undefined,
                     ),
                   ],
@@ -83,7 +84,13 @@ export function convertIDL(rootTypes: webidl2.IDLRootType[], options?: Options):
 }
 
 function convertTypedef(idl: webidl2.TypedefType) {
-  return ts.createTypeAliasDeclaration(undefined, undefined, ts.createIdentifier(idl.name), undefined, convertType(idl.idlType))
+  return ts.factory.createTypeAliasDeclaration(
+    undefined,
+    undefined,
+    ts.factory.createIdentifier(idl.name),
+    undefined,
+    convertType(idl.idlType),
+  )
 }
 
 function createIterableMethods(name: string, keyType: ts.TypeNode, valueType: ts.TypeNode, pair: boolean, async: boolean) {
@@ -103,7 +110,7 @@ function createIterableMethods(name: string, keyType: ts.TypeNode, valueType: ts
       [],
       ts.createExpressionWithTypeArguments(
         [ts.createTupleTypeNode([keyType, valueType])],
-        ts.createIdentifier(async ? 'AsyncIterableIterator' : 'IterableIterator'),
+        ts.factory.createIdentifier(async ? 'AsyncIterableIterator' : 'IterableIterator'),
       ),
       'entries',
       undefined,
@@ -111,21 +118,21 @@ function createIterableMethods(name: string, keyType: ts.TypeNode, valueType: ts
     ts.createMethodSignature(
       [],
       [],
-      ts.createExpressionWithTypeArguments([keyType], ts.createIdentifier(async ? 'AsyncIterableIterator' : 'IterableIterator')),
+      ts.createExpressionWithTypeArguments([keyType], ts.factory.createIdentifier(async ? 'AsyncIterableIterator' : 'IterableIterator')),
       'keys',
       undefined,
     ),
     ts.createMethodSignature(
       [],
       [],
-      ts.createExpressionWithTypeArguments([valueType], ts.createIdentifier(async ? 'AsyncIterableIterator' : 'IterableIterator')),
+      ts.createExpressionWithTypeArguments([valueType], ts.factory.createIdentifier(async ? 'AsyncIterableIterator' : 'IterableIterator')),
       'values',
       undefined,
     ),
     ts.createMethodSignature(
       [],
       [
-        ts.createParameter(
+        ts.factory.createParameterDeclaration(
           [],
           [],
           undefined,
@@ -134,9 +141,9 @@ function createIterableMethods(name: string, keyType: ts.TypeNode, valueType: ts
           ts.createFunctionTypeNode(
             [],
             [
-              ts.createParameter([], [], undefined, 'value', undefined, valueType),
-              ts.createParameter([], [], undefined, pair ? 'key' : 'index', undefined, keyType),
-              ts.createParameter(
+              ts.factory.createParameterDeclaration([], [], undefined, 'value', undefined, valueType),
+              ts.factory.createParameterDeclaration([], [], undefined, pair ? 'key' : 'index', undefined, keyType),
+              ts.factory.createParameterDeclaration(
                 [],
                 [],
                 undefined,
@@ -148,7 +155,7 @@ function createIterableMethods(name: string, keyType: ts.TypeNode, valueType: ts
             ts.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
           ),
         ),
-        ts.createParameter(
+        ts.factory.createParameterDeclaration(
           [],
           [],
           undefined,
@@ -168,16 +175,16 @@ function convertInterface(idl: webidl2.InterfaceType | webidl2.DictionaryType | 
   const members: ts.TypeElement[] = []
   const inheritance = []
   if ('inheritance' in idl && idl.inheritance) {
-    inheritance.push(ts.createExpressionWithTypeArguments(undefined, ts.createIdentifier(idl.inheritance)))
+    inheritance.push(ts.createExpressionWithTypeArguments(undefined, ts.factory.createIdentifier(idl.inheritance)))
   }
 
   idl.members.forEach((member: webidl2.IDLInterfaceMemberType | webidl2.FieldType) => {
     switch (member.type) {
       case 'attribute':
-        if (options?.emscripten) {
-          members.push(createAttributeGetter(member))
-          members.push(createAttributeSetter(member))
-        }
+        // if (options?.emscripten) {
+        //   members.push(createAttributeGetter(member))
+        //   members.push(createAttributeSetter(member))
+        // }
         members.push(convertMemberAttribute(member))
         break
       case 'operation':
@@ -220,7 +227,7 @@ function convertInterface(idl: webidl2.InterfaceType | webidl2.DictionaryType | 
     return ts.createClassDeclaration(
       undefined,
       [],
-      ts.createIdentifier(idl.name),
+      ts.factory.createIdentifier(idl.name),
       undefined,
       !inheritance.length ? undefined : [ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, inheritance)],
       members as any, // TODO:
@@ -230,7 +237,7 @@ function convertInterface(idl: webidl2.InterfaceType | webidl2.DictionaryType | 
   return ts.createInterfaceDeclaration(
     undefined,
     [],
-    ts.createIdentifier(idl.name),
+    ts.factory.createIdentifier(idl.name),
     undefined,
     !inheritance.length ? undefined : [ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, inheritance)],
     members,
@@ -241,11 +248,11 @@ function convertInterfaceIncludes(idl: webidl2.IncludesType) {
   return ts.createInterfaceDeclaration(
     undefined,
     [],
-    ts.createIdentifier(idl.target),
+    ts.factory.createIdentifier(idl.target),
     undefined,
     [
       ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [
-        ts.createExpressionWithTypeArguments(undefined, ts.createIdentifier(idl.includes)),
+        ts.createExpressionWithTypeArguments(undefined, ts.factory.createIdentifier(idl.includes)),
       ]),
     ],
     [],
@@ -257,20 +264,19 @@ function createAttributeGetter(value: webidl2.AttributeMemberType) {
 }
 
 function createAttributeSetter(value: webidl2.AttributeMemberType) {
-  const parameter = ts.createParameter([], [], undefined, value.name, undefined, convertType(value.idlType))
+  const parameter = ts.factory.createParameterDeclaration([], [], undefined, value.name, undefined, convertType(value.idlType))
   return ts.createMethodSignature([], [parameter], ts.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword), 'set_' + value.name, undefined)
 }
 
-function convertMemberOperation(idl: webidl2.OperationMemberType) {   
-    
+function convertMemberOperation(idl: webidl2.OperationMemberType) {
   const args = idl.arguments.map(convertArgument)
-  return ts.factory.createMethodSignature(
-    idl.special === "static" ? ts.factory.createModifiersFromModifierFlags(ts.ModifierFlags.Static): undefined,
-    idl.name,
-    undefined,
-    [],
-    args, 
-    convertType(idl.idlType));
+  const modifiers: ts.Modifier[] = []
+
+  if (idl.special === 'static') {
+    modifiers.push(ts.factory.createModifier(ts.SyntaxKind.StaticKeyword))
+  }
+
+  return ts.factory.createMethodSignature(modifiers, idl.name, undefined, [], args, convertType(idl.idlType))
 }
 
 function convertMemberConstructor(idl: webidl2.ConstructorMemberType | webidl2.OperationMemberType, options?: Options) {
@@ -283,13 +289,13 @@ function convertMemberConstructor(idl: webidl2.ConstructorMemberType | webidl2.O
 
 function convertMemberField(idl: webidl2.FieldType) {
   const optional = !idl.required ? ts.createToken(ts.SyntaxKind.QuestionToken) : undefined
-  return ts.createPropertySignature(undefined, ts.createIdentifier(idl.name), optional, convertType(idl.idlType), undefined)
+  return ts.createPropertySignature(undefined, ts.factory.createIdentifier(idl.name), optional, convertType(idl.idlType), undefined)
 }
 
 function convertMemberConst(idl: webidl2.ConstantMemberType) {
   return ts.createPropertySignature(
     [ts.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
-    ts.createIdentifier(idl.name),
+    ts.factory.createIdentifier(idl.name),
     undefined,
     convertType(idl.idlType),
     undefined,
@@ -297,18 +303,22 @@ function convertMemberConst(idl: webidl2.ConstantMemberType) {
 }
 
 function convertMemberAttribute(idl: webidl2.AttributeMemberType) {
-  return ts.createPropertySignature(
-    [idl.readonly ? ts.createModifier(ts.SyntaxKind.ReadonlyKeyword) : null].filter((it) => it != null),
-    ts.createIdentifier(idl.name),
-    undefined,
-    convertType(idl.idlType),
-    undefined,
-  )
+  const modifiers: ts.Modifier[] = []
+
+  if (idl.special == 'static') {
+    modifiers.push(ts.factory.createModifier(ts.SyntaxKind.StaticKeyword))
+  }
+
+  if (idl.readonly) {
+    modifiers.push(ts.createModifier(ts.SyntaxKind.ReadonlyKeyword))
+  }
+
+  return ts.createPropertySignature(modifiers, ts.factory.createIdentifier(idl.name), undefined, convertType(idl.idlType), undefined)
 }
 
 function convertArgument(idl: webidl2.Argument) {
   const optional = idl.optional ? ts.createToken(ts.SyntaxKind.QuestionToken) : undefined
-  return ts.createParameter([], [], undefined, idl.name, optional, convertType(idl.idlType))
+  return ts.factory.createParameterDeclaration([], [], undefined, idl.name, optional, convertType(idl.idlType))
 }
 
 function convertType(idl: webidl2.IDLTypeDescription): ts.TypeNode {
@@ -327,7 +337,7 @@ function convertType(idl: webidl2.IDLTypeDescription): ts.TypeNode {
   }
   if (idl.generic) {
     const type = baseTypeConversionMap.get(idl.generic) || idl.generic
-    return ts.createTypeReferenceNode(ts.createIdentifier(type), idl.idlType.map(convertType))
+    return ts.createTypeReferenceNode(ts.factory.createIdentifier(type), idl.idlType.map(convertType))
   }
   if (idl.union) {
     return ts.createUnionTypeNode(idl.idlType.map(convertType))
@@ -338,20 +348,22 @@ function convertType(idl: webidl2.IDLTypeDescription): ts.TypeNode {
 }
 
 function convertEnum(idl: webidl2.EnumType) {
-  return ts.createTypeAliasDeclaration(
-    undefined,
-    undefined,
-    ts.createIdentifier(idl.name),
-    undefined,
-    ts.createUnionTypeNode(idl.values.map((it) => ts.createLiteralTypeNode(ts.createStringLiteral(it.value)))),
+  return ts.factory.createEnumDeclaration(
+    [],
+    [],
+    ts.factory.createIdentifier(idl.name),
+    idl.values.map((it) => {
+      const name = it.value.includes('::e') ? it.value.split('::e')[1] : it.value
+      return ts.factory.createEnumMember(`'${name}'`)
+    }),
   )
 }
 
 function convertCallback(idl: webidl2.CallbackType) {
-  return ts.createTypeAliasDeclaration(
+  return ts.factory.createTypeAliasDeclaration(
     undefined,
     undefined,
-    ts.createIdentifier(idl.name),
+    ts.factory.createIdentifier(idl.name),
     undefined,
     ts.createFunctionTypeNode(undefined, idl.arguments.map(convertArgument), convertType(idl.idlType)),
   )

@@ -1,0 +1,18 @@
+interface Example {
+    static readonly attribute unsigned long StaticReadOnly;
+
+    static void StaticMethod();
+
+  
+};
+
+
+enum Fruit2 {
+    "Fruit::eAPPLE",
+    "Fruit::eBANANA"
+};
+
+enum Fruit {
+    "Apple",
+    "Banana"
+};
