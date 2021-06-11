@@ -16,3 +16,24 @@ enum Fruit {
     "Apple",
     "Banana"
 };
+
+
+interface PxGeometry
+{
+    void getType();
+};
+
+interface PxHeightFieldGeometry
+{
+    boolean isValid();
+};
+PxHeightFieldGeometry implements PxGeometry;
+
+interface PxRigidActor
+{
+};
+
+// Brok
+interface PxRigidStatic{
+};
+PxRigidStatic implements PxRigidActor;

@@ -30,7 +30,7 @@ exports.fixes = {
         });
         inheritance.forEach(function (_a) {
             var left = _a.left, right = _a.right;
-            idlString = idlString.replace(new RegExp("interface " + left + " {"), "interface " + left + ": " + right + " {");
+            idlString = idlString.replace(new RegExp("interface " + left + " "), "interface " + left + ": " + right + " ");
         });
         return idlString;
     },

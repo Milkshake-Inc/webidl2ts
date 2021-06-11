@@ -24,4 +24,14 @@ declare module Example {
         'Apple',
         'Banana'
     }
+    class PxGeometry {
+        getType(): void;
+    }
+    class PxHeightFieldGeometry extends PxGeometry {
+        isValid(): boolean;
+    }
+    class PxRigidActor {
+    }
+    class PxRigidStatic extends PxRigidActor {
+    }
 }
