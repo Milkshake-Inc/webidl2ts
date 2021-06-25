@@ -30,7 +30,7 @@ exports.fixes = {
         });
         inheritance.forEach(function (_a) {
             var left = _a.left, right = _a.right;
-            idlString = idlString.replace(new RegExp("interface " + left + " "), "interface " + left + ": " + right + " ");
+            idlString = idlString.replace(new RegExp("interface " + left + " {"), "interface " + left + ": " + right + " {");
         });
         return idlString;
     },
@@ -46,6 +46,7 @@ exports.fixes = {
             .replace(/attribute (\w+)\[\]/gi, function (match, group) {
             return "attribute FrozenArray<" + group + ">";
         })
+            .replace(/unsigned long\[\]/gi, 'FrozenArray<unsigned long>')
             .replace(/float\[\]/gi, 'FrozenArray<float>')
             .replace(/long\[\]/gi, 'FrozenArray<long>');
     },
