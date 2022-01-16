@@ -1,11 +1,11 @@
 {
-  "name": "@milk-ecs/webidl2ts",
-  "version": "1.0.4",
+  "name": "@milkshakeio/webidl2ts",
+  "version": "1.0.5",
   "description": "Converts Web IDL to Typescript (.d.ts)",
   "main": "dist/index.js",
   "publishConfig": {
-		"access": "public"
-	},
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc && chmod 755 dist/cli.js",
     "lint": "tsc --noEmit",
