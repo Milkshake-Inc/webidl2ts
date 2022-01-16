@@ -1,6 +1,6 @@
 {
   "name": "@milkshakeio/webidl2ts",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "Converts Web IDL to Typescript (.d.ts)",
   "main": "dist/index.js",
   "publishConfig": {
