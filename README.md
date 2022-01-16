@@ -7,7 +7,13 @@ This tool generates a `.d.ts` file based on a WebIDL input file.
 CLI
 
 ```shell
-npx milkshake-inc/webidl2ts
+npx @milkshakeio/webidl2ts
+```
+
+NPM
+
+```shell
+yarn add @milkshakeio/webidl2ts
 ```
 
 # Usage
